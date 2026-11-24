@@ -16,18 +16,16 @@ Converting to lowercase (to avoid soft masked sequences messing it up for me):
 ```
 zcat GCF_009914755.1_T2T-CHM13v2.0_genomic.fna.gz | awk '/^>/ {print; next} {print toupper($0)}' > chm13v2.0.upper.fa
 grep -v "^>" chm13v2.0.upper.fa | grep -c "[acgt]"    # should print 0
+# might want to use tr instead as it is faster:
+# zcat genome.fna.gz | tr 'acgtn' 'ACGTN' > genome.upper.fa 
 ```
 
-Didn't run yet:
-Changing chromosome names to t2t truth set:
+Changing chromosome names to t2t truth set and indexing:
 ```
 grep -v "^#" GCF_009914755.1_T2T-CHM13v2.0_assembly_report.txt | awk -F'\t' '{print $7"\t"$10}' > refseq_to_chr.tsv   # RefSeq name -> UCSC name
-awk 'NR==FNR{m[$1]=$2; next} /^>/{split($1,a,">"); id=a[2]; print ">" (id in m ? m[id] : id); next} {print}' refseq_to_chr.tsv chm13v2.0.upper.fa > chm13v2.0.fa
-grep ">" chm13v2.0.fa    # should list chr1 ... chr22, chrX, chrY, chrM
-```
-
-Indexing it:
-```
+awk '/^>/ { match($0, /chromosome [0-9XY]+/); n = substr($0, RSTART+11, RLENGTH-11); print ">chr" n; next } {print}' chm13v2.0.upper.fa > chm13v2.0.fa
+grep "^>" chm13v2.0.fa      # should list >chr1 ... >chr22, >chrX, >chrY
 samtools faidx chm13v2.0.fa
-cut -f1,2 chm13v2.0.fa.fai     # chromosome lengths; total should be ~3.11 Gb
+cut -f1,2 chm13v2.0.fa.fai  # chromosome lengths
+awk '{s+=$2} END {print s}' chm13v2.0.fa.fai   # total: about 3,117,292,070 bp
 ```
