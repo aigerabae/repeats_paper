@@ -15,7 +15,7 @@ grep genomic.fna.gz md5checksums.txt; md5sum GCF_009914755.1_T2T-CHM13v2.0_genom
 Converting to lowercase (to avoid soft masked sequences messing it up for me):
 ```
 zcat GCF_009914755.1_T2T-CHM13v2.0_genomic.fna.gz | awk '/^>/ {print; next} {print toupper($0)}' > chm13v2.0.upper.fa
-grep -c "[acgt]" chm13v2.0.upper.fa    # should print 0
+grep -v "^>" chm13v2.0.upper.fa | grep -c "[acgt]"    # should print 0
 ```
 
 Didn't run yet:
