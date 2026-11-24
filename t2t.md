@@ -29,3 +29,9 @@ samtools faidx chm13v2.0.fa
 cut -f1,2 chm13v2.0.fa.fai  # chromosome lengths
 awk '{s+=$2} END {print s}' chm13v2.0.fa.fai   # total: about 3,117,292,070 bp
 ```
+
+To finish preparing the genome:
+```
+md5sum chm13v2.0.fa > chm13v2.0.fa.md5     # record for your run log
+rm chm13v2.0.upper.fa                       # intermediate file no longer needed
+```
