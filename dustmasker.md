@@ -74,3 +74,9 @@ head -3 $GENOME.dust.intervals
 
 - First attempt (2026-11-25) failed with exit 126: `/usr/bin/time` outside the container could not start `docker` (server has both regular and snap Docker installed). Fixed by timing inside the container. Timing from outside would also have measured the Docker client's memory, not dustmasker's.
 - dustmasker uses 1 CPU, so the 16-CPU allocation mostly sits idle; report CPU time alongside wall time.
+
+
+(base) dell_815@dell815:/media/ds1821p_III/aserikzhan/repeats/runs/dustmasker/chm13$ grep -E "Exit status|Elapsed \(wall|Maximum resident" time.log
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 31:57.10
+	Maximum resident set size (kbytes): 391692
+	Exit status: 0
