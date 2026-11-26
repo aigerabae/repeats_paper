@@ -35,3 +35,25 @@ To finish preparing the genome:
 md5sum chm13v2.0.fa > chm13v2.0.fa.md5     # record for your run log
 rm chm13v2.0.upper.fa                       # intermediate file no longer needed
 ```
+
+Downloading truthset from t2t consortium - censat and repeatmasker dfam (their run):
+```
+cd /data/rkalendar/benchmark2
+mkdir -p truth/chm13 && cd truth/chm13
+S3=https://s3-us-west-2.amazonaws.com/human-pangenomics
+
+# list what's in the annotation folder
+curl -s "$S3?prefix=T2T/CHM13/assemblies/annotation/&delimiter=/" \
+  | grep -o "<Key>[^<]*</Key>" | sed 's/<[^>]*>//g' > s3_listing.txt
+grep -i -E "chm13v2.0.*(censat|repeatmasker).*\.bed" s3_listing.txt
+
+# download the matching files
+for K in $(grep -i -E "chm13v2.0.*(censat|repeatmasker).*\.bed(\.gz)?$" s3_listing.txt); do
+  wget -nv "$S3/$K"
+done
+
+# record what we got
+{ echo "downloaded $(date -Iseconds) from $S3/T2T/CHM13/assemblies/annotation/"
+  ls -l *.bed* ; md5sum *.bed* ; } > DOWNLOAD_INFO.txt
+cat DOWNLOAD_INFO.txt
+```
